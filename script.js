@@ -354,17 +354,11 @@ if (settingsNameInput) {
   let parentDiv = settingsNameInput.parentElement;
 
   settingsNameInput.addEventListener("input", () => {
-    let currentDashboardName = document
-      .querySelector("#greet h6")
-      .textContent.trim();
+    let currentDashboardName = document.querySelector("#greet h6").textContent.trim();
     let typedName = settingsNameInput.value.trim();
     let existingBtn = parentDiv.querySelector(".name-save-btn");
 
-    if (
-      typedName !== currentDashboardName &&
-      typedName !== "" &&
-      !existingBtn
-    ) {
+    if (typedName !== currentDashboardName && typedName !== "" && !existingBtn) {
       let nameSaveBtn = document.createElement("button");
       nameSaveBtn.textContent = "Save Changes";
       nameSaveBtn.className = "name-save-btn";
@@ -383,14 +377,14 @@ if (settingsNameInput) {
 
         if (newName !== "") {
           document.querySelector("#greet h6").textContent = newName;
-
+          
           let circleEl = document.querySelector(".circle");
           if (circleEl && typeof getInitials === "function") {
-            circleEl.textContent = getInitials(newName);
+             circleEl.textContent = getInitials(newName);
           }
-
+          
           let currentUser = JSON.parse(localStorage.getItem("currentUser"));
-          if (currentUser) {
+          if(currentUser) {
             currentUser.name = newName;
             localStorage.setItem("currentUser", JSON.stringify(currentUser));
           }
@@ -398,7 +392,7 @@ if (settingsNameInput) {
           alert("Profile name updated successfully!");
           innerSettings.style.display = "none";
         }
-
+        
         nameSaveBtn.remove();
       });
 
@@ -410,7 +404,7 @@ if (settingsNameInput) {
 }
 
 // ==========================================
-// 8. Sign Up & Login Switching Logic
+// 8. Sign Up & Login Switching Logic (With .input-box Clearing Fix)
 // ==========================================
 const loginSection = document.querySelector("#login-section");
 const signupSection = document.querySelector("#signup-section");
@@ -437,8 +431,7 @@ if (loggedInUser) {
   if (loginSection) loginSection.style.display = "none";
   if (signupSection) signupSection.style.display = "none";
   if (profileNameDisplay) profileNameDisplay.textContent = loggedInUser.name;
-  if (profileCircleDisplay)
-    profileCircleDisplay.textContent = getInitials(loggedInUser.name);
+  if (profileCircleDisplay) profileCircleDisplay.textContent = getInitials(loggedInUser.name);
 }
 
 if (showSignupLink && loginSection && signupSection) {
@@ -474,17 +467,18 @@ if (loginBtn && loginSection) {
       return;
     }
 
-    let foundUser = users.find(
-      (u) => u.name === usernameVal && u.password === passVal,
-    );
+    let foundUser = users.find(u => u.name === usernameVal && u.password === passVal);
 
     if (foundUser) {
       localStorage.setItem("currentUser", JSON.stringify(foundUser));
       localStorage.setItem("isLoggedIn", "true");
 
       if (profileNameDisplay) profileNameDisplay.textContent = foundUser.name;
-      if (profileCircleDisplay)
-        profileCircleDisplay.textContent = getInitials(foundUser.name);
+      if (profileCircleDisplay) profileCircleDisplay.textContent = getInitials(foundUser.name);
+
+      // 🔥 Clear Login input boxes
+      document.querySelector("#login-name").value = "";
+      document.querySelector("#login-pass").value = "";
 
       loginSection.style.display = "none";
     } else {
@@ -495,17 +489,32 @@ if (loginBtn && loginSection) {
 
 if (signupBtn && signupSection) {
   signupBtn.addEventListener("click", () => {
-    let nameVal = document.querySelector("#signup-name").value.trim();
-    let passVal = document.querySelector("#signup-pass").value.trim();
+    let nameInputEl = document.querySelector("#signup-name");
+    let passInputEl = document.querySelector("#signup-pass");
+
+    let nameVal = nameInputEl.value.trim();
+    let passVal = passInputEl.value.trim();
 
     if (nameVal === "" || passVal === "") {
       alert("Please fill all details!");
       return;
     }
 
+    let usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+    if (!usernameRegex.test(nameVal)) {
+      alert("Username must be 3-20 characters long and should not contain spaces or special symbols (only letters, numbers, and underscores are allowed).");
+      return;
+    }
+
+    let passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+    if (!passwordRegex.test(passVal)) {
+      alert("Password must be at least 6 characters long and contain at least one letter and one number.");
+      return;
+    }
+
     let users = JSON.parse(localStorage.getItem("usersList")) || [];
 
-    let userExists = users.find((u) => u.name === nameVal);
+    let userExists = users.find(u => u.name === nameVal);
     if (userExists) {
       alert("This username is already taken! Please choose another or log in.");
       return;
@@ -513,14 +522,21 @@ if (signupBtn && signupSection) {
 
     let newUser = {
       name: nameVal,
-      password: passVal,
+      password: passVal
     };
 
     users.push(newUser);
     localStorage.setItem("usersList", JSON.stringify(users));
 
-    alert("Account created successfully! Please log in with your credentials.");
+    // 🔥 FIX: .input-box class wale ya sare inputs ko safely clear karne ke liye
+    let inputBoxes = document.querySelectorAll(".input-box input");
+    inputBoxes.forEach(input => input.value = "");
 
+    nameInputEl.value = "";
+    passInputEl.value = "";
+
+    alert("Account created successfully! Please log in with your credentials.");
+    
     signupSection.style.display = "none";
     if (loginSection) loginSection.style.display = "flex";
   });
@@ -579,10 +595,8 @@ const resetBtn = document.querySelector("#resetBtn");
 
 if (resetBtn) {
   resetBtn.addEventListener("click", () => {
-    let confirmReset = confirm(
-      "Are you sure you want to delete all data and reset the app?",
-    );
-
+    let confirmReset = confirm("Are you sure you want to delete all data and reset the app?");
+    
     if (confirmReset) {
       localStorage.clear();
       window.location.reload();
