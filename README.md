@@ -4,6 +4,12 @@
 
 ---
 
+## 🔗 Live Demo
+Check out the live deployment of the project here:  
+👉 **[FinTrack Pro Live](https://fintract-pro-cohort3.vercel.app/)**
+
+---
+
 ## ✨ Features
 
 - **Dashboard Overview:** Real-time calculation of Current Balance, Total Income, Total Expense, and Transaction Count.
@@ -28,16 +34,23 @@
 
 ---
 
-## 📸 Screenshots
+## 📂 Project Structure
 
-*(You can add screenshots or GIFs of your Dashboard and Login screen here)*
+```text
+📦 FinTrack-Pro
+ ┣ 📂 assets          # Fonts and static images
+ ┣ 📜 index.html      # Main HTML file containing dashboard and auth sections
+ ┣ 📜 style.css       # Complete styling and responsive media queries
+ ┗ 📜 script.js       # App logic, local storage, charts, and auth handling
+
+```
 
 ---
 
-## ⚙️ Getting Started & Installation
+## 📸 Screenshots
 
-To run this project locally on your machine, follow these simple steps:
+### 📱 Login & Authentication View
+<img width="1917" height="925" alt="FinTrack Pro Dashboard" src="https://github.com/user-attachments/assets/23631c6b-83be-46b4-9116-905b26b1616e" />
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/your-username/fintrack-pro.git](https://github.com/your-username/fintrack-pro.git)
+  ### 💻 Desktop View
+<img width="1624" height="969" alt="FinTrack Pro Login" src="https://github.com/user-attachments/assets/3d1df8df-781f-46c5-8d51-0182ee033cca" />
