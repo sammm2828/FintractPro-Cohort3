@@ -389,7 +389,6 @@ if (settingsNameInput) {
             circleEl.textContent = getInitials(newName);
           }
 
-          // Current logged in user ka naam bhi localstorage me update karo
           let currentUser = JSON.parse(localStorage.getItem("currentUser"));
           if (currentUser) {
             currentUser.name = newName;
@@ -433,7 +432,6 @@ function getInitials(name) {
   return "U";
 }
 
-// 🔥 FIX: Check karo ki user pehle se logged-in hai kya, tabhi naam aur dashboard set karo
 let loggedInUser = JSON.parse(localStorage.getItem("currentUser"));
 if (loggedInUser) {
   if (loginSection) loginSection.style.display = "none";
@@ -459,29 +457,30 @@ if (showLoginLink && loginSection && signupSection) {
   });
 }
 
-// 🔥 FIX: Strict Login Validation (Sirf registered user hi login kar payega)
 if (loginBtn && loginSection) {
   loginBtn.addEventListener("click", () => {
-    let identifier = document.querySelector("#login-name").value.trim();
+    let usernameVal = document.querySelector("#login-name").value.trim();
     let passVal = document.querySelector("#login-pass").value.trim();
 
-    if (identifier === "" || passVal === "") {
+    if (usernameVal === "" || passVal === "") {
       alert("Please enter username and password!");
       return;
     }
 
     let users = JSON.parse(localStorage.getItem("usersList")) || [];
 
-    // Check karo ki user database me exist karta hai ya nahi
+    if (users.length === 0) {
+      alert("No accounts found! Please Sign Up first.");
+      return;
+    }
+
     let foundUser = users.find(
-      (u) =>
-        (u.name.toLowerCase() === identifier.toLowerCase() ||
-          u.email.toLowerCase() === identifier.toLowerCase()) &&
-        u.password === passVal,
+      (u) => u.name === usernameVal && u.password === passVal,
     );
 
     if (foundUser) {
       localStorage.setItem("currentUser", JSON.stringify(foundUser));
+      localStorage.setItem("isLoggedIn", "true");
 
       if (profileNameDisplay) profileNameDisplay.textContent = foundUser.name;
       if (profileCircleDisplay)
@@ -489,49 +488,41 @@ if (loginBtn && loginSection) {
 
       loginSection.style.display = "none";
     } else {
-      alert(
-        "Invalid Username or Password! Please Sign up first if you don't have an account.",
-      );
+      alert("Incorrect Username or Password! Please check your details.");
     }
   });
 }
 
-// 🔥 FIX: Sign Up Logic (Naya account database me save karega)
 if (signupBtn && signupSection) {
   signupBtn.addEventListener("click", () => {
     let nameVal = document.querySelector("#signup-name").value.trim();
-    let emailVal = document.querySelector("#signup-email").value.trim();
     let passVal = document.querySelector("#signup-pass").value.trim();
 
-    if (nameVal === "" || emailVal === "" || passVal === "") {
+    if (nameVal === "" || passVal === "") {
       alert("Please fill all details!");
       return;
     }
 
     let users = JSON.parse(localStorage.getItem("usersList")) || [];
 
-    let userExists = users.find((u) => u.email === emailVal);
+    let userExists = users.find((u) => u.name === nameVal);
     if (userExists) {
-      alert("This email is already registered! Please log in.");
+      alert("This username is already taken! Please choose another or log in.");
       return;
     }
 
     let newUser = {
       name: nameVal,
-      email: emailVal,
       password: passVal,
     };
 
     users.push(newUser);
     localStorage.setItem("usersList", JSON.stringify(users));
-    localStorage.setItem("currentUser", JSON.stringify(newUser));
 
-    if (profileNameDisplay) profileNameDisplay.textContent = newUser.name;
-    if (profileCircleDisplay)
-      profileCircleDisplay.textContent = getInitials(newUser.name);
+    alert("Account created successfully! Please log in with your credentials.");
 
-    alert("Account created successfully!");
     signupSection.style.display = "none";
+    if (loginSection) loginSection.style.display = "flex";
   });
 }
 
@@ -576,6 +567,7 @@ let logoutBtn = document.querySelector("#logout");
 if (logoutBtn && loginSection) {
   logoutBtn.addEventListener("click", () => {
     localStorage.removeItem("currentUser");
+    localStorage.removeItem("isLoggedIn");
     window.location.reload();
   });
 }
