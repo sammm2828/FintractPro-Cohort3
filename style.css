@@ -4,17 +4,16 @@
 }
 
 :root {
-  --bg-color: #ffffff; /* Main background */
-  --text-color: #222222; /* Main text */
-  --card-bg: #f5f5f5; /* Cards ya boxes ka color */
+  --bg-color: #ffffff; 
+  --text-color: #222222; 
+  --card-bg: #f5f5f5; 
 }
 
-/* 2. Jab body par 'dark-theme-active' class aayegi tab yeh rang chalenge */
+
 body.dark-theme-active {
-  --bg-color: #121212; /* Dark background */
-  --text-color: #ffffff; /* White text */
-  --card-bg: #1e1e1e; /* Dark card color */
-}
+  --bg-color: #121212; 
+  --text-color: #ffffff; 
+  --card-bg: #1e1e1e; 
 
 * {
   margin: 0;
@@ -745,11 +744,11 @@ input::-webkit-inner-spin-button {
   left: 0;
   width: 100%;
   height: 100vh;
-  background-color: #dce4f0; /* Light blueish background */
+  background-color: #dce4f0;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999; /* Sabse upar dikhega */
+  z-index: 9999; 
   padding: 20px;
 }
 
@@ -859,7 +858,7 @@ input::-webkit-inner-spin-button {
   background-color: #d1d5db;
 }
 
-/* Dark mode me login theek se dikhe */
+
 body.dark-theme-active .login-section {
   background-color: #121212;
 }
@@ -874,12 +873,12 @@ body.dark-theme-active .login-footer {
   border-top: 1px solid #333;
 }
 
-/* Footer Section jisme Text aur Sign up Link hai */
+
 .login-footer {
   background-color: #f7f8fa;
   padding: 25px 40px;
   display: flex;
-  justify-content: center; /* Text ko center mein laane ke liye */
+  justify-content: center; 
   align-items: center;
   border-top: 1px solid #f3f4f6;
 }
@@ -888,23 +887,21 @@ body.dark-theme-active .login-footer {
   color: #b0b4be;
   font-size: 15px;
   font-weight: 500;
-  margin: 0; /* Extra margin hatane ke liye */
+  margin: 0; 
 }
 
 .register-link {
   text-decoration: none;
-  color: #3f36db; /* Purple/Blue color match karne ke liye */
+  color: #3f36db; 
   font-weight: 600;
   margin-left: 5px;
   transition: all 0.2s ease;
 }
 
 .register-link:hover {
-  color: #2b23a1; /* Hover par thoda dark hoga */
-  /* text-decoration: underline; Hover par underline dikhegi */
+  color: #2b23a1; 
 }
 
-/* Dark mode footer fix */
 body.dark-theme-active .login-footer {
   background-color: #1a1a1a;
   border-top: 1px solid #333;
@@ -945,8 +942,6 @@ body.dark-theme-active .signup-text {
   .logo h1 {
     font-size: 22px;
   }
-
-  /* 🔥 FIX: Yahan justify-content flex-start aur gap lagaya hai taaki circle aur text inline aa jayein 🔥 */
   .Profile {
     width: 100%;
     justify-content: flex-start;
