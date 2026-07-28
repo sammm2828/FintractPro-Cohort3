@@ -1,5 +1,5 @@
 // ==========================================
-// 1. Elements Select Karein
+// 1. Elements Selection
 // ==========================================
 let chartElement = document.querySelector("#chart");
 let addTra = document.querySelector("#Add");
@@ -505,8 +505,7 @@ if (signupBtn && signupSection) {
       alert("Username must be 3-20 characters long and should not contain spaces or special symbols (only letters, numbers, and underscores are allowed).");
       return;
     }
-
-    // Updated Password Regex allowing special characters like @, $, !, etc.
+    
     let passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/;
     if (!passwordRegex.test(passVal)) {
       alert("Password must be at least 6 characters long and contain at least one letter and one number.");
