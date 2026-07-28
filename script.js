@@ -506,7 +506,8 @@ if (signupBtn && signupSection) {
       return;
     }
 
-    let passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+    // Updated Password Regex allowing special characters like @, $, !, etc.
+    let passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/;
     if (!passwordRegex.test(passVal)) {
       alert("Password must be at least 6 characters long and contain at least one letter and one number.");
       return;
@@ -528,7 +529,6 @@ if (signupBtn && signupSection) {
     users.push(newUser);
     localStorage.setItem("usersList", JSON.stringify(users));
 
-    // 🔥 FIX: .input-box class wale ya sare inputs ko safely clear karne ke liye
     let inputBoxes = document.querySelectorAll(".input-box input");
     inputBoxes.forEach(input => input.value = "");
 
