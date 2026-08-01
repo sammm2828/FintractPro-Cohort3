@@ -13,7 +13,7 @@ body.dark-theme-active {
   --bg-color: #121212; 
   --text-color: #ffffff; 
   --card-bg: #1e1e1e; 
-} /* <-- Yahan bracket miss tha, jo fix kar diya gaya hai */
+}
 
 * {
   margin: 0;
@@ -692,9 +692,6 @@ input::-webkit-inner-spin-button {
   transform: translateY(0);
 }
 
-/* ==========================================
-   🔐 LOGIN SECTION CSS
-   ========================================== */
 .login-section {
   position: fixed;
   top: 0;
@@ -837,9 +834,6 @@ body.dark-theme-active .signup-text {
   color: #a0a0a0;
 }
 
-/* ==========================================
-   📱 ONLY MOBILE RESPONSIVE MEDIA QUERY
-   ========================================== */
 @media (max-width: 768px) {
   html,
   body {
@@ -895,7 +889,7 @@ body.dark-theme-active .signup-text {
 
   section {
     display: grid;
-    grid-template-columns: 1fr 1fR;
+    grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto auto auto;
     grid-template-areas:
       "top-left top-center-left"
