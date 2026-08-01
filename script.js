@@ -501,7 +501,7 @@ if (loginBtn && loginSection) {
       return;
     }
 
-    // STRICT LOGIN: Only username and password are checked
+    // STRICT LOGIN: Checking strictly against username and password
     let foundUser = users.find(u => u.username === usernameVal && u.password === passVal);
 
     if (foundUser) {
@@ -556,7 +556,7 @@ if (signupBtn && signupSection) {
       return;
     }
 
-    // Full name is saved strictly for display purposes inside the UI; login uses username.
+    // Strict separation: Login uses username/password, Full Name is strictly for UI display inside dashboard.
     let newUser = {
       username: usernameVal,
       name: fullNameVal !== "" ? fullNameVal : usernameVal, 
