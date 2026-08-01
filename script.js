@@ -29,13 +29,15 @@ let btnExpense = document.querySelector("#btn-expense");
 
 const themeCheckbox = document.querySelector(".dark-mode .checkbox");
 
-themeCheckbox.addEventListener("change", () => {
-  document.body.classList.toggle("dark-theme-active");
-  localStorage.setItem("darkTheme", themeCheckbox.checked);
-});
+if (themeCheckbox) {
+  themeCheckbox.addEventListener("change", () => {
+    document.body.classList.toggle("dark-theme-active");
+    localStorage.setItem("darkTheme", themeCheckbox.checked);
+  });
+}
 
 if (localStorage.getItem("darkTheme") === "true") {
-  themeCheckbox.checked = true;
+  if (themeCheckbox) themeCheckbox.checked = true;
   document.body.classList.add("dark-theme-active");
 }
 
@@ -46,24 +48,27 @@ let currencyInput =
 // ==========================================
 // 2. Chart Setup
 // ==========================================
-let myChart = new Chart(chartElement, {
-  type: "bar",
-  data: {
-    labels: [],
-    datasets: [
-      {
-        label: "Income",
-        data: [],
-        backgroundColor: "#22c55e",
-      },
-      {
-        label: "Expense",
-        data: [],
-        backgroundColor: "#ef4444",
-      },
-    ],
-  },
-});
+let myChart = null;
+if (chartElement) {
+  myChart = new Chart(chartElement, {
+    type: "bar",
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: "Income",
+          data: [],
+          backgroundColor: "#22c55e",
+        },
+        {
+          label: "Expense",
+          data: [],
+          backgroundColor: "#ef4444",
+        },
+      ],
+    },
+  });
+}
 
 // ==========================================
 // 3. Global Variables, Local Storage & Helpers
@@ -112,20 +117,21 @@ function updateDashboard() {
   totalExpense = 0;
 
   transactions.forEach((t) => {
-    if (t.type === "Income") totalIncome += t.amount;
-    else totalExpense += t.amount;
+    if (t.type === "Income") totalIncome += Number(t.amount) || 0;
+    else totalExpense += Number(t.amount) || 0;
   });
 
   totalTransactionsCount = transactions.length;
   let currentBalance = totalIncome - totalExpense;
 
-  currentBalanceEl.textContent = `${currentCurrencySign} ${currentBalance.toFixed(2)}`;
-  totalIncomeEl.textContent = `${currentCurrencySign} ${totalIncome.toFixed(2)}`;
-  totalExpenseEl.textContent = `${currentCurrencySign} ${totalExpense.toFixed(2)}`;
-  totalTransactionsEl.textContent = totalTransactionsCount;
+  if (currentBalanceEl) currentBalanceEl.textContent = `${currentCurrencySign} ${currentBalance.toFixed(2)}`;
+  if (totalIncomeEl) totalIncomeEl.textContent = `${currentCurrencySign} ${totalIncome.toFixed(2)}`;
+  if (totalExpenseEl) totalExpenseEl.textContent = `${currentCurrencySign} ${totalExpense.toFixed(2)}`;
+  if (totalTransactionsEl) totalTransactionsEl.textContent = totalTransactionsCount;
 }
 
 function renderChart() {
+  if (!myChart) return;
   let chartData = {};
 
   transactions.forEach((t) => {
@@ -133,9 +139,9 @@ function renderChart() {
       chartData[t.date] = { income: 0, expense: 0 };
     }
     if (t.type === "Income") {
-      chartData[t.date].income += t.amount;
+      chartData[t.date].income += Number(t.amount) || 0;
     } else {
-      chartData[t.date].expense += t.amount;
+      chartData[t.date].expense += Number(t.amount) || 0;
     }
   });
 
@@ -153,6 +159,7 @@ function renderChart() {
 }
 
 function renderTransactionsUI(filterType = currentFilter) {
+  if (!transactionUI) return;
   currentFilter = filterType;
 
   transactionUI.innerHTML = `
@@ -183,7 +190,7 @@ function renderTransactionsUI(filterType = currentFilter) {
     const amtEl = document.createElement("div");
     amtEl.className = "amount-val";
     amtEl.setAttribute("data-amount", t.amount);
-    amtEl.textContent = `${currentCurrencySign} ${t.amount.toFixed(2)}`;
+    amtEl.textContent = `${currentCurrencySign} ${Number(t.amount).toFixed(2)}`;
 
     if (t.type === "Income") {
       amtEl.style.color = "green";
@@ -196,16 +203,19 @@ function renderTransactionsUI(filterType = currentFilter) {
     const actEl = document.createElement("div");
     actEl.innerHTML = `<i class="ri-delete-bin-line delete-btn" style="color: red; cursor: pointer; font-size: 18px;"></i>`;
 
-    actEl.querySelector(".delete-btn").addEventListener("click", function () {
-      transactions = transactions.filter(
-        (transaction) => transaction.id !== t.id,
-      );
+    let deleteBtn = actEl.querySelector(".delete-btn");
+    if (deleteBtn) {
+      deleteBtn.addEventListener("click", function () {
+        transactions = transactions.filter(
+          (transaction) => transaction.id !== t.id,
+        );
 
-      updateLocalStorage();
-      updateDashboard();
-      renderChart();
-      renderTransactionsUI();
-    });
+        updateLocalStorage();
+        updateDashboard();
+        renderChart();
+        renderTransactionsUI();
+      });
+    }
 
     transactionUI.appendChild(dateEl);
     transactionUI.appendChild(descEl);
@@ -226,28 +236,42 @@ init();
 // ==========================================
 // 4. Popup (Overlay) & Settings Toggles
 // ==========================================
-addTra.addEventListener("click", () => {
-  overlay.style.display = "flex";
-});
-close.addEventListener("click", () => {
-  overlay.style.display = "none";
-});
-cancel.addEventListener("click", () => {
-  overlay.style.display = "none";
-});
-settings.addEventListener("click", () => {
-  let currentName = document.querySelector("#greet h6").textContent;
-  if (settingsNameInput) {
-    settingsNameInput.value = currentName;
-  }
-  let existingBtn = document.querySelector(".name-save-btn");
-  if (existingBtn) existingBtn.remove();
+if (addTra && overlay) {
+  addTra.addEventListener("click", () => {
+    overlay.style.display = "flex";
+  });
+}
+if (close && overlay) {
+  close.addEventListener("click", () => {
+    overlay.style.display = "none";
+  });
+}
+if (cancel && overlay) {
+  cancel.addEventListener("click", () => {
+    overlay.style.display = "none";
+  });
+}
 
-  innerSettings.style.display = "flex";
-});
-settingCloseBtn.addEventListener("click", () => {
-  innerSettings.style.display = "none";
-});
+if (settings && innerSettings) {
+  settings.addEventListener("click", () => {
+    let greetEl = document.querySelector("#greet h6");
+    let currentName = greetEl ? greetEl.textContent : "";
+    let settingsNameInput = document.querySelector("#settings-name-input");
+    if (settingsNameInput) {
+      settingsNameInput.value = currentName;
+    }
+    let existingBtn = document.querySelector(".name-save-btn");
+    if (existingBtn) existingBtn.remove();
+
+    innerSettings.style.display = "flex";
+  });
+}
+
+if (settingCloseBtn && innerSettings) {
+  settingCloseBtn.addEventListener("click", () => {
+    innerSettings.style.display = "none";
+  });
+}
 
 if (currencyInput) {
   currencyInput.addEventListener("change", function () {
@@ -276,11 +300,13 @@ if (currencyInput) {
         updateDashboard();
         renderTransactionsUI();
 
-        innerSettings.style.display = "none";
+        if (innerSettings) innerSettings.style.display = "none";
         settingSaveBtn.remove();
       });
 
-      currencyInput.parentElement.appendChild(settingSaveBtn);
+      if (currencyInput.parentElement) {
+        currencyInput.parentElement.appendChild(settingSaveBtn);
+      }
     }
   });
 }
@@ -288,49 +314,49 @@ if (currencyInput) {
 // ==========================================
 // 5. Save Transaction Logic
 // ==========================================
-saveBtn.addEventListener("click", function (event) {
-  event.preventDefault();
+if (saveBtn) {
+  saveBtn.addEventListener("click", function (event) {
+    event.preventDefault();
 
-  let type = typeInput.value;
-  let desc = descInput.value;
-  let amount = parseFloat(amountInput.value);
-  let date = dateInput.value;
-  let category = categoryInput.value;
+    let type = typeInput ? typeInput.value : "Income";
+    let desc = descInput ? descInput.value.trim() : "";
+    let amount = amountInput ? parseFloat(amountInput.value) : 0;
+    let date = dateInput ? dateInput.value : "";
+    let category = categoryInput ? categoryInput.value : "";
 
-  if (!desc || !amount || !date || !category) {
-    alert("Please fill all the details!");
-    return;
-  }
+    if (!desc || !amount || !date || !category) {
+      alert("Please fill all the details!");
+      return;
+    }
 
-  if (amount <= 0) {
-    alert(
-      "The amount cannot be zero or negative. Please enter a valid amount.",
-    );
-    return;
-  }
+    if (amount <= 0) {
+      alert("The amount cannot be zero or negative. Please enter a valid amount.");
+      return;
+    }
 
-  const newTransaction = {
-    id: Date.now(),
-    type: type,
-    desc: desc,
-    amount: amount,
-    date: date,
-    category: category,
-  };
+    const newTransaction = {
+      id: Date.now(),
+      type: type,
+      desc: desc,
+      amount: amount,
+      date: date,
+      category: category,
+    };
 
-  transactions.push(newTransaction);
+    transactions.push(newTransaction);
 
-  updateLocalStorage();
-  updateDashboard();
-  renderChart();
-  renderTransactionsUI();
+    updateLocalStorage();
+    updateDashboard();
+    renderChart();
+    renderTransactionsUI();
 
-  descInput.value = "";
-  amountInput.value = "";
-  dateInput.value = "";
-  categoryInput.value = "";
-  overlay.style.display = "none";
-});
+    if (descInput) descInput.value = "";
+    if (amountInput) amountInput.value = "";
+    if (dateInput) dateInput.value = "";
+    if (categoryInput) categoryInput.value = "";
+    if (overlay) overlay.style.display = "none";
+  });
+}
 
 // ==========================================
 // 6. Filter Buttons Logic
@@ -354,11 +380,12 @@ if (settingsNameInput) {
   let parentDiv = settingsNameInput.parentElement;
 
   settingsNameInput.addEventListener("input", () => {
-    let currentDashboardName = document.querySelector("#greet h6").textContent.trim();
+    let greetH6 = document.querySelector("#greet h6");
+    let currentDashboardName = greetH6 ? greetH6.textContent.trim() : "";
     let typedName = settingsNameInput.value.trim();
-    let existingBtn = parentDiv.querySelector(".name-save-btn");
+    let existingBtn = parentDiv ? parentDiv.querySelector(".name-save-btn") : null;
 
-    if (typedName !== currentDashboardName && typedName !== "" && !existingBtn) {
+    if (typedName !== currentDashboardName && typedName !== "" && !existingBtn && parentDiv) {
       let nameSaveBtn = document.createElement("button");
       nameSaveBtn.textContent = "Save Changes";
       nameSaveBtn.className = "name-save-btn";
@@ -376,7 +403,7 @@ if (settingsNameInput) {
         let newName = settingsNameInput.value.trim();
 
         if (newName !== "") {
-          document.querySelector("#greet h6").textContent = newName;
+          if (greetH6) greetH6.textContent = newName;
           
           let circleEl = document.querySelector(".circle");
           if (circleEl && typeof getInitials === "function") {
@@ -390,7 +417,7 @@ if (settingsNameInput) {
           }
 
           alert("Profile name updated successfully!");
-          innerSettings.style.display = "none";
+          if (innerSettings) innerSettings.style.display = "none";
         }
         
         nameSaveBtn.remove();
@@ -404,7 +431,7 @@ if (settingsNameInput) {
 }
 
 // ==========================================
-// 8. Sign Up & Login Switching Logic (With .input-box Clearing Fix)
+// 8. Sign Up & Login Switching Logic
 // ==========================================
 const loginSection = document.querySelector("#login-section");
 const signupSection = document.querySelector("#signup-section");
@@ -417,8 +444,9 @@ const profileNameDisplay = document.querySelector("#greet h6");
 const profileCircleDisplay = document.querySelector(".circle");
 
 function getInitials(name) {
+  if (!name) return "U";
   let parts = name.trim().split(" ");
-  if (parts.length >= 2) {
+  if (parts.length >= 2 && parts[0] && parts[1]) {
     return (parts[0][0] + parts[1][0]).toUpperCase();
   } else if (parts.length === 1 && parts[0] !== "") {
     return parts[0].substring(0, 2).toUpperCase();
@@ -430,8 +458,8 @@ let loggedInUser = JSON.parse(localStorage.getItem("currentUser"));
 if (loggedInUser) {
   if (loginSection) loginSection.style.display = "none";
   if (signupSection) signupSection.style.display = "none";
-  if (profileNameDisplay) profileNameDisplay.textContent = loggedInUser.name;
-  if (profileCircleDisplay) profileCircleDisplay.textContent = getInitials(loggedInUser.name);
+  if (profileNameDisplay && loggedInUser.name) profileNameDisplay.textContent = loggedInUser.name;
+  if (profileCircleDisplay && loggedInUser.name) profileCircleDisplay.textContent = getInitials(loggedInUser.name);
 }
 
 if (showSignupLink && loginSection && signupSection) {
@@ -452,8 +480,11 @@ if (showLoginLink && loginSection && signupSection) {
 
 if (loginBtn && loginSection) {
   loginBtn.addEventListener("click", () => {
-    let usernameVal = document.querySelector("#login-name").value.trim();
-    let passVal = document.querySelector("#login-pass").value.trim();
+    let loginNameInput = document.querySelector("#login-name");
+    let loginPassInputEl = document.querySelector("#login-pass");
+
+    let usernameVal = loginNameInput ? loginNameInput.value.trim() : "";
+    let passVal = loginPassInputEl ? loginPassInputEl.value.trim() : "";
 
     if (usernameVal === "" || passVal === "") {
       alert("Please enter username and password!");
@@ -476,9 +507,8 @@ if (loginBtn && loginSection) {
       if (profileNameDisplay) profileNameDisplay.textContent = foundUser.name;
       if (profileCircleDisplay) profileCircleDisplay.textContent = getInitials(foundUser.name);
 
-      // 🔥 Clear Login input boxes
-      document.querySelector("#login-name").value = "";
-      document.querySelector("#login-pass").value = "";
+      if (loginNameInput) loginNameInput.value = "";
+      if (loginPassInputEl) loginPassInputEl.value = "";
 
       loginSection.style.display = "none";
     } else {
@@ -490,10 +520,12 @@ if (loginBtn && loginSection) {
 if (signupBtn && signupSection) {
   signupBtn.addEventListener("click", () => {
     let nameInputEl = document.querySelector("#signup-name");
+    let emailInputEl = document.querySelector("#signup-email");
     let passInputEl = document.querySelector("#signup-pass");
 
-    let nameVal = nameInputEl.value.trim();
-    let passVal = passInputEl.value.trim();
+    let nameVal = nameInputEl ? nameInputEl.value.trim() : "";
+    let fullNameVal = emailInputEl ? emailInputEl.value.trim() : "";
+    let passVal = passInputEl ? passInputEl.value.trim() : "";
 
     if (nameVal === "" || passVal === "") {
       alert("Please fill all details!");
@@ -521,18 +553,17 @@ if (signupBtn && signupSection) {
     }
 
     let newUser = {
-      name: nameVal,
+      name: fullNameVal !== "" ? fullNameVal : nameVal,
+      username: nameVal,
       password: passVal
     };
 
     users.push(newUser);
     localStorage.setItem("usersList", JSON.stringify(users));
 
-    let inputBoxes = document.querySelectorAll(".input-box input");
-    inputBoxes.forEach(input => input.value = "");
-
-    nameInputEl.value = "";
-    passInputEl.value = "";
+    if (nameInputEl) nameInputEl.value = "";
+    if (emailInputEl) emailInputEl.value = "";
+    if (passInputEl) passInputEl.value = "";
 
     alert("Account created successfully! Please log in with your credentials.");
     
@@ -579,7 +610,7 @@ if (toggleSignupEye && signupPassInput) {
 }
 
 let logoutBtn = document.querySelector("#logout");
-if (logoutBtn && loginSection) {
+if (logoutBtn) {
   logoutBtn.addEventListener("click", () => {
     localStorage.removeItem("currentUser");
     localStorage.removeItem("isLoggedIn");
