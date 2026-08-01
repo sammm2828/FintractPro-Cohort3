@@ -42,7 +42,7 @@ if (localStorage.getItem("darkTheme") === "true") {
 }
 
 let currencyInput =
-  document.querySelector("#currency-select") ||
+  document.querySelector("#currency-picker") ||
   document.querySelector(".inner-settings select");
 
 // ==========================================
@@ -437,7 +437,7 @@ const loginSection = document.querySelector("#login-section");
 const signupSection = document.querySelector("#signup-section");
 const showSignupLink = document.querySelector("#show-signup");
 const showLoginLink = document.querySelector("#show-login");
-const loginBtn = document.querySelector("#login-btn");
+let loginBtn = document.querySelector("#login-btn");
 const signupBtn = document.querySelector("#signup-btn");
 
 const profileNameDisplay = document.querySelector("#greet h6");
@@ -460,6 +460,9 @@ if (loggedInUser) {
   if (signupSection) signupSection.style.display = "none";
   if (profileNameDisplay && loggedInUser.name) profileNameDisplay.textContent = loggedInUser.name;
   if (profileCircleDisplay && loggedInUser.name) profileCircleDisplay.textContent = getInitials(loggedInUser.name);
+} else {
+  if (loginSection) loginSection.style.display = "flex";
+  if (signupSection) signupSection.style.display = "none";
 }
 
 if (showSignupLink && loginSection && signupSection) {
@@ -498,7 +501,8 @@ if (loginBtn && loginSection) {
       return;
     }
 
-    let foundUser = users.find(u => u.name === usernameVal && u.password === passVal);
+    // STRICT LOGIN: Only username and password are checked
+    let foundUser = users.find(u => u.username === usernameVal && u.password === passVal);
 
     if (foundUser) {
       localStorage.setItem("currentUser", JSON.stringify(foundUser));
@@ -520,20 +524,20 @@ if (loginBtn && loginSection) {
 if (signupBtn && signupSection) {
   signupBtn.addEventListener("click", () => {
     let nameInputEl = document.querySelector("#signup-name");
-    let emailInputEl = document.querySelector("#signup-email");
+    let fullNameInputEl = document.querySelector("#signup-email"); // Full Name input field[cite: 3]
     let passInputEl = document.querySelector("#signup-pass");
 
-    let nameVal = nameInputEl ? nameInputEl.value.trim() : "";
-    let fullNameVal = emailInputEl ? emailInputEl.value.trim() : "";
+    let usernameVal = nameInputEl ? nameInputEl.value.trim() : "";
+    let fullNameVal = fullNameInputEl ? fullNameInputEl.value.trim() : "";
     let passVal = passInputEl ? passInputEl.value.trim() : "";
 
-    if (nameVal === "" || passVal === "") {
-      alert("Please fill all details!");
+    if (usernameVal === "" || passVal === "") {
+      alert("Please fill username and password!");
       return;
     }
 
     let usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-    if (!usernameRegex.test(nameVal)) {
+    if (!usernameRegex.test(usernameVal)) {
       alert("Username must be 3-20 characters long and should not contain spaces or special symbols (only letters, numbers, and underscores are allowed).");
       return;
     }
@@ -546,15 +550,16 @@ if (signupBtn && signupSection) {
 
     let users = JSON.parse(localStorage.getItem("usersList")) || [];
 
-    let userExists = users.find(u => u.name === nameVal);
+    let userExists = users.find(u => u.username === usernameVal);
     if (userExists) {
       alert("This username is already taken! Please choose another or log in.");
       return;
     }
 
+    // Full name is saved strictly for display purposes inside the UI; login uses username.
     let newUser = {
-      name: fullNameVal !== "" ? fullNameVal : nameVal,
-      username: nameVal,
+      username: usernameVal,
+      name: fullNameVal !== "" ? fullNameVal : usernameVal, 
       password: passVal
     };
 
@@ -562,7 +567,7 @@ if (signupBtn && signupSection) {
     localStorage.setItem("usersList", JSON.stringify(users));
 
     if (nameInputEl) nameInputEl.value = "";
-    if (emailInputEl) emailInputEl.value = "";
+    if (fullNameInputEl) fullNameInputEl.value = "";
     if (passInputEl) passInputEl.value = "";
 
     alert("Account created successfully! Please log in with your credentials.");
